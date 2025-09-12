@@ -1,7 +1,7 @@
-import { Tabs } from 'expo-router';
-import { Chrome as Home, Settings } from 'lucide-react-native';
 import { FoodBudgetProvider } from '@/contexts/FoodBudgetContext';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
+import { Tabs } from 'expo-router';
+import { Chrome as Home, Settings } from 'lucide-react-native';
 
 function TabsContent() {
   const { t } = useLanguage();

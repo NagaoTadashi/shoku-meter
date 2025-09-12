@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { MealEntry } from '@/types';
+import { X } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
+  KeyboardAvoidingView,
   Modal,
-  View,
+  Platform,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Alert,
-  KeyboardAvoidingView,
-  Platform
+  View
 } from 'react-native';
-import { X } from 'lucide-react-native';
-import { MealEntry } from '@/types';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MealInputModalProps {
   visible: boolean;
@@ -44,7 +44,7 @@ export default function MealInputModal({
 
   const handleSubmit = () => {
     const numericAmount = parseFloat(amount);
-    
+
     if (isNaN(numericAmount) || numericAmount <= 0) {
       Alert.alert(t.error, t.invalidAmount);
       return;
@@ -89,16 +89,16 @@ export default function MealInputModal({
       animationType="fade"
       onRequestClose={handleClose}
     >
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.overlay}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backdrop}
           activeOpacity={1}
           onPress={handleClose}
         >
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.modal}
             activeOpacity={1}
             onPress={(e) => e.stopPropagation()}
@@ -129,13 +129,13 @@ export default function MealInputModal({
             </View>
 
             <View style={styles.buttons}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={handleClose}
               >
                 <Text style={styles.cancelButtonText}>{t.cancel}</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.submitButton}
                 onPress={handleSubmit}
               >

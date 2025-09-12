@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { Trash2, CreditCard as Edit3, Coffee, Sun, Moon } from 'lucide-react-native';
-import { MealEntry } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { MealEntry } from '@/types';
+import { Coffee, CreditCard as Edit3, Moon, Sun, Trash2 } from 'lucide-react-native';
+import React from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface MealCardProps {
   meal: MealEntry;
@@ -62,15 +62,15 @@ export default function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
       </View>
       <View style={styles.actions}>
         <View style={styles.actions}>
-          <TouchableOpacity 
-            style={styles.actionButton} 
+          <TouchableOpacity
+            style={styles.actionButton}
             onPress={() => onEdit(meal)}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
             <Edit3 size={18} color="#34C759" />
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.actionButton} 
+          <TouchableOpacity
+            style={styles.actionButton}
             onPress={handleDelete}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >

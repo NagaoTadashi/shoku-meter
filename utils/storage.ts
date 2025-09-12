@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MonthlyBudget } from '@/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MONTHLY_TARGET_KEY = 'monthly_target';
 const CURRENT_MONTH_KEY = 'current_month';

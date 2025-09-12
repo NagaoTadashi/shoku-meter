@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { Target, Trash2 } from 'lucide-react-native';
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { storage } from '@/utils/storage';
+import { Target, Trash2 } from 'lucide-react-native';
+import React, { useState } from 'react';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function SettingsScreen() {
   const { t, language, setLanguage } = useLanguage();
@@ -24,7 +24,7 @@ export default function SettingsScreen() {
 
   const handleUpdateTarget = () => {
     const newTarget = parseFloat(targetInput);
-    
+
     if (isNaN(newTarget) || newTarget <= 0) {
       Alert.alert(t.error, t.invalidAmount);
       return;
@@ -72,7 +72,7 @@ export default function SettingsScreen() {
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     const currentDay = now.getDate();
     const progressPercentage = ((currentMonth.totalSpent / monthlyTarget) * 100).toFixed(1);
-    
+
     return {
       daysInMonth,
       currentDay,
@@ -85,7 +85,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
@@ -99,7 +99,7 @@ export default function SettingsScreen() {
               <Target size={20} color="#34C759" />
               <Text style={styles.sectionTitle}>{t.monthlyTarget}</Text>
             </View>
-            
+
             <View style={styles.targetCard}>
               <Text style={styles.targetLabel}>{t.targetAmount}</Text>
               <View style={styles.targetInputContainer}>
@@ -116,7 +116,7 @@ export default function SettingsScreen() {
                   selectTextOnFocus
                 />
               </View>
-              
+
               <View style={styles.targetButtons}>
                 {isEditing ? (
                   <>
@@ -147,7 +147,7 @@ export default function SettingsScreen() {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t.language}</Text>
-            
+
             <View style={styles.languageCard}>
               <TouchableOpacity
                 style={[
@@ -168,9 +168,9 @@ export default function SettingsScreen() {
                   </View>
                 )}
               </TouchableOpacity>
-              
+
               <View style={styles.languageDivider} />
-              
+
               <TouchableOpacity
                 style={[
                   styles.languageOption,
@@ -195,7 +195,7 @@ export default function SettingsScreen() {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t.monthlyStatistics}</Text>
-            
+
             <View style={styles.statsCard}>
               <View style={styles.statRow}>
                 <Text style={styles.statLabel}>{t.monthlySpent}</Text>
@@ -203,7 +203,7 @@ export default function SettingsScreen() {
                   ${currentMonth.totalSpent.toLocaleString()}
                 </Text>
               </View>
-              
+
               <View style={styles.statRow}>
                 <Text style={styles.statLabel}>{t.progress}</Text>
                 <Text style={[
@@ -213,14 +213,14 @@ export default function SettingsScreen() {
                   {stats.progressPercentage}%
                 </Text>
               </View>
-              
+
               <View style={styles.statRow}>
                 <Text style={styles.statLabel}>{t.dailyAverage}</Text>
                 <Text style={styles.statValue}>
                   ${stats.dailyAverage.toLocaleString()}
                 </Text>
               </View>
-              
+
               <View style={styles.statRow}>
                 <Text style={styles.statLabel}>{t.daysElapsed}</Text>
                 <Text style={styles.statValue}>
@@ -232,7 +232,7 @@ export default function SettingsScreen() {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t.dataManagement}</Text>
-            
+
             <TouchableOpacity
               style={styles.dangerButton}
               onPress={handleClearData}

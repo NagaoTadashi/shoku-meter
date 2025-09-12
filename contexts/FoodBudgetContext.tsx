@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { FoodBudgetState, MealEntry, MonthlyBudget, DailyBudget } from '@/types';
+import { FoodBudgetState, MealEntry, MonthlyBudget } from '@/types';
 import { storage } from '@/utils/storage';
+import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
 
 interface FoodBudgetContextType extends FoodBudgetState {
   setMonthlyTarget: (amount: number) => void;
@@ -10,7 +10,7 @@ interface FoodBudgetContextType extends FoodBudgetState {
   getTodayMeals: () => MealEntry[];
 }
 
-type Action = 
+type Action =
   | { type: 'SET_MONTHLY_TARGET'; payload: number }
   | { type: 'SET_INITIAL_DATA'; payload: { target: number; monthData: MonthlyBudget | null } }
   | { type: 'ADD_MEAL_ENTRY'; payload: MealEntry }
@@ -149,7 +149,7 @@ function foodBudgetReducer(state: FoodBudgetState, action: Action): FoodBudgetSt
       const { id, amount } = action.payload;
       const todayString = getTodayString();
       const todayBudget = state.currentMonth.dailyBudgets[todayString];
-      
+
       if (!todayBudget) return state;
 
       const mealIndex = todayBudget.meals.findIndex(meal => meal.id === id);
@@ -192,14 +192,14 @@ function foodBudgetReducer(state: FoodBudgetState, action: Action): FoodBudgetSt
       const id = action.payload;
       const todayString = getTodayString();
       const todayBudget = state.currentMonth.dailyBudgets[todayString];
-      
+
       if (!todayBudget) return state;
 
       const mealToDelete = todayBudget.meals.find(meal => meal.id === id);
       if (!mealToDelete) return state;
 
       const updatedMeals = todayBudget.meals.filter(meal => meal.id !== id);
-      
+
       const updatedTodayBudget = {
         ...todayBudget,
         totalSpent: todayBudget.totalSpent - mealToDelete.amount,

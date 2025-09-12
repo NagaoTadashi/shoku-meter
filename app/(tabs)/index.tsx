@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  RefreshControl,
-  SafeAreaView,
-  Dimensions,
-} from 'react-native';
-import { Plus, TrendingUp, Calendar, Wallet } from 'lucide-react-native';
-import { Coffee, Sun, Moon, DollarSign } from 'lucide-react-native';
-import { useFoodBudget } from '@/contexts/FoodBudgetContext';
-import { useLanguage } from '@/contexts/LanguageContext';
-import BudgetCard from '@/components/BudgetCard';
 import CircularProgress from '@/components/CircularProgress';
 import MealCard from '@/components/MealCard';
 import MealInputModal from '@/components/MealInputModal';
+import { useFoodBudget } from '@/contexts/FoodBudgetContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { MealEntry } from '@/types';
+import { Calendar, Coffee, DollarSign, Moon, Plus, Sun, TrendingUp, Wallet } from 'lucide-react-native';
+import React, { useState } from 'react';
+import {
+  Dimensions,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -102,8 +100,8 @@ export default function HomeScreen() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
+          <RefreshControl
+            refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor="#007AFF"
           />
@@ -133,7 +131,7 @@ export default function HomeScreen() {
                 <Wallet size={16} color="#007AFF" />
               </View>
             </View>
-            
+
             <View style={styles.circularProgressContainer}>
               <CircularProgress
                 size={180}
@@ -152,7 +150,7 @@ export default function HomeScreen() {
                 </View>
               </CircularProgress>
             </View>
-            
+
             <View style={styles.budgetStats}>
               <View style={styles.budgetStat}>
                 <Text style={styles.budgetStatValue}>${dailyBudgetAmount.toLocaleString()}</Text>
@@ -269,7 +267,7 @@ export default function HomeScreen() {
             </View>
           )}
         </View>
-        
+
         <View style={styles.bottomSpacer} />
       </ScrollView>
 

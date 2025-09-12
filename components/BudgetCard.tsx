@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
 interface BudgetCardProps {
@@ -28,12 +28,12 @@ export default function BudgetCard({
         <Text style={styles.title}>{title}</Text>
         {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
-      
+
       <Text style={[styles.amount, { color: isOverBudget ? '#FF3B30' : color }]}>
         ¥{Math.abs(amount).toLocaleString()}
         {amount < 0 && ' 超過'}
       </Text>
-      
+
       {showProgress && maxAmount && (
         <View style={styles.progressContainer}>
           <Progress.Bar

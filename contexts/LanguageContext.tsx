@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 export type Language = 'en' | 'ja';
 
@@ -15,7 +15,7 @@ interface Translations {
   confirm: string;
   error: string;
   success: string;
-  
+
   // Home Screen
   goodMorning: string;
   todaysBudget: string;
@@ -34,7 +34,7 @@ interface Translations {
   seeAll: string;
   noMealsYet: string;
   startTracking: string;
-  
+
   // Settings Screen
   monthlyTarget: string;
   targetAmount: string;
@@ -45,7 +45,7 @@ interface Translations {
   dataManagement: string;
   resetAllData: string;
   language: string;
-  
+
   // Meal Input
   addBreakfast: string;
   addLunch: string;
@@ -55,11 +55,11 @@ interface Translations {
   editDinner: string;
   amount: string;
   add: string;
-  
+
   // Meal Card
   deleteMeal: string;
   deleteMealConfirm: string;
-  
+
   // Alerts
   invalidAmount: string;
   amountTooLarge: string;
@@ -85,7 +85,7 @@ const translations: Record<Language, Translations> = {
     confirm: 'Confirm',
     error: 'Error',
     success: 'Success',
-    
+
     // Home Screen
     goodMorning: 'Good Morning',
     todaysBudget: "Today's Budget",
@@ -104,7 +104,7 @@ const translations: Record<Language, Translations> = {
     seeAll: 'See All',
     noMealsYet: 'No meals yet',
     startTracking: 'Start tracking your daily food expenses',
-    
+
     // Settings Screen
     monthlyTarget: 'Monthly Target',
     targetAmount: 'Target Amount',
@@ -115,7 +115,7 @@ const translations: Record<Language, Translations> = {
     dataManagement: 'Data Management',
     resetAllData: 'Reset All Data',
     language: 'Language',
-    
+
     // Meal Input
     addBreakfast: 'Add Breakfast',
     addLunch: 'Add Lunch',
@@ -125,11 +125,11 @@ const translations: Record<Language, Translations> = {
     editDinner: 'Edit Dinner',
     amount: 'Amount',
     add: 'Add',
-    
+
     // Meal Card
     deleteMeal: 'Delete Meal',
     deleteMealConfirm: 'Are you sure you want to delete this meal entry?',
-    
+
     // Alerts
     invalidAmount: 'Please enter a valid amount',
     amountTooLarge: 'Amount is too large (please enter $500 or less)',
@@ -153,7 +153,7 @@ const translations: Record<Language, Translations> = {
     confirm: '確認',
     error: 'エラー',
     success: '成功',
-    
+
     // Home Screen
     goodMorning: 'おはようございます',
     todaysBudget: '今日の予算',
@@ -172,7 +172,7 @@ const translations: Record<Language, Translations> = {
     seeAll: 'すべて見る',
     noMealsYet: 'まだ食事がありません',
     startTracking: '日々の食費の記録を始めましょう',
-    
+
     // Settings Screen
     monthlyTarget: '月間目標',
     targetAmount: '目標金額',
@@ -183,7 +183,7 @@ const translations: Record<Language, Translations> = {
     dataManagement: 'データ管理',
     resetAllData: 'すべてのデータをリセット',
     language: '言語',
-    
+
     // Meal Input
     addBreakfast: '朝食を追加',
     addLunch: '昼食を追加',
@@ -193,11 +193,11 @@ const translations: Record<Language, Translations> = {
     editDinner: '夕食を編集',
     amount: '金額',
     add: '追加',
-    
+
     // Meal Card
     deleteMeal: '食事を削除',
     deleteMealConfirm: 'この食事の記録を削除してもよろしいですか？',
-    
+
     // Alerts
     invalidAmount: '有効な金額を入力してください',
     amountTooLarge: '金額が大きすぎます（500円以下で入力してください）',
