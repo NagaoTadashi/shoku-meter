@@ -76,16 +76,31 @@ function foodBudgetReducer(state: FoodBudgetState, action: Action): FoodBudgetSt
         meals: []
       };
 
-      const remainingBudget = target - currentMonth.totalSpent;
-      const dailyBudgetAmount = calculateDailyBudget(remainingBudget, daysRemaining);
+      // Freeze today's daily limit: compute once per day based on budget at start of day
+      const spentBeforeToday = currentMonth.totalSpent - (todayBudget.totalSpent || 0);
+      const remainingAtDayStart = target - spentBeforeToday;
+      const computedDailyLimit = calculateDailyBudget(remainingAtDayStart, daysRemaining);
+      const todayDailyLimit = todayBudget.dailyLimit ?? computedDailyLimit;
+
+      // Persist dailyLimit into today's budget if missing
+      const ensuredTodayBudget = { ...todayBudget, dailyLimit: todayDailyLimit };
+      if (!currentMonth.dailyBudgets[todayString] || currentMonth.dailyBudgets[todayString].dailyLimit !== todayDailyLimit) {
+        currentMonth = {
+          ...currentMonth,
+          dailyBudgets: {
+            ...currentMonth.dailyBudgets,
+            [todayString]: ensuredTodayBudget,
+          },
+        };
+      }
 
       return {
         ...state,
         monthlyTarget: target,
         currentMonth,
-        dailyBudgetAmount,
-        todaySpent: todayBudget.totalSpent,
-        todayRemaining: dailyBudgetAmount - todayBudget.totalSpent,
+        dailyBudgetAmount: todayDailyLimit,
+        todaySpent: ensuredTodayBudget.totalSpent,
+        todayRemaining: todayDailyLimit - ensuredTodayBudget.totalSpent,
         daysRemaining
       };
     }
@@ -97,15 +112,26 @@ function foodBudgetReducer(state: FoodBudgetState, action: Action): FoodBudgetSt
         targetAmount: newTarget
       };
 
-      const remainingBudget = newTarget - updatedMonth.totalSpent;
-      const dailyBudgetAmount = calculateDailyBudget(remainingBudget, state.daysRemaining);
+      // Recompute today's daily limit when monthly target changes
+      const todayString = getTodayString();
+      const todayBudget = updatedMonth.dailyBudgets[todayString] || { date: todayString, totalSpent: 0, meals: [] };
+      const spentBeforeToday = updatedMonth.totalSpent - (todayBudget.totalSpent || 0);
+      const remainingAtDayStart = newTarget - spentBeforeToday;
+      const newDailyLimit = calculateDailyBudget(remainingAtDayStart, state.daysRemaining);
+      const nextMonthState = {
+        ...updatedMonth,
+        dailyBudgets: {
+          ...updatedMonth.dailyBudgets,
+          [todayString]: { ...todayBudget, dailyLimit: newDailyLimit },
+        },
+      };
 
       return {
         ...state,
         monthlyTarget: newTarget,
-        currentMonth: updatedMonth,
-        dailyBudgetAmount,
-        todayRemaining: dailyBudgetAmount - state.todaySpent
+        currentMonth: nextMonthState,
+        dailyBudgetAmount: newDailyLimit,
+        todayRemaining: newDailyLimit - state.todaySpent
       };
     }
 
@@ -132,16 +158,14 @@ function foodBudgetReducer(state: FoodBudgetState, action: Action): FoodBudgetSt
           [todayString]: updatedTodayBudget
         }
       };
-
-      const remainingBudget = state.monthlyTarget - updatedMonth.totalSpent;
-      const dailyBudgetAmount = calculateDailyBudget(remainingBudget, state.daysRemaining);
+      const todayDailyLimit = (updatedMonth.dailyBudgets[todayString]?.dailyLimit) ?? state.dailyBudgetAmount;
 
       return {
         ...state,
         currentMonth: updatedMonth,
-        dailyBudgetAmount,
+        dailyBudgetAmount: todayDailyLimit,
         todaySpent: updatedTodayBudget.totalSpent,
-        todayRemaining: dailyBudgetAmount - updatedTodayBudget.totalSpent
+        todayRemaining: todayDailyLimit - updatedTodayBudget.totalSpent
       };
     }
 
@@ -175,16 +199,14 @@ function foodBudgetReducer(state: FoodBudgetState, action: Action): FoodBudgetSt
           [todayString]: updatedTodayBudget
         }
       };
-
-      const remainingBudget = state.monthlyTarget - updatedMonth.totalSpent;
-      const dailyBudgetAmount = calculateDailyBudget(remainingBudget, state.daysRemaining);
+      const todayDailyLimit = (updatedMonth.dailyBudgets[todayString]?.dailyLimit) ?? state.dailyBudgetAmount;
 
       return {
         ...state,
         currentMonth: updatedMonth,
-        dailyBudgetAmount,
+        dailyBudgetAmount: todayDailyLimit,
         todaySpent: updatedTodayBudget.totalSpent,
-        todayRemaining: dailyBudgetAmount - updatedTodayBudget.totalSpent
+        todayRemaining: todayDailyLimit - updatedTodayBudget.totalSpent
       };
     }
 
@@ -214,16 +236,14 @@ function foodBudgetReducer(state: FoodBudgetState, action: Action): FoodBudgetSt
           [todayString]: updatedTodayBudget
         }
       };
-
-      const remainingBudget = state.monthlyTarget - updatedMonth.totalSpent;
-      const dailyBudgetAmount = calculateDailyBudget(remainingBudget, state.daysRemaining);
+      const todayDailyLimit = (updatedMonth.dailyBudgets[todayString]?.dailyLimit) ?? state.dailyBudgetAmount;
 
       return {
         ...state,
         currentMonth: updatedMonth,
-        dailyBudgetAmount,
+        dailyBudgetAmount: todayDailyLimit,
         todaySpent: updatedTodayBudget.totalSpent,
-        todayRemaining: dailyBudgetAmount - updatedTodayBudget.totalSpent
+        todayRemaining: todayDailyLimit - updatedTodayBudget.totalSpent
       };
     }
 

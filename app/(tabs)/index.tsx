@@ -2,9 +2,8 @@ import CircularProgress from '@/components/CircularProgress';
 import MealCard from '@/components/MealCard';
 import MealInputModal from '@/components/MealInputModal';
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { MealEntry } from '@/types';
-import { Calendar, Coffee, DollarSign, Moon, Plus, Sun, TrendingUp, Wallet } from 'lucide-react-native';
+import { Calendar, DollarSign, Moon, Plus, Sun, TrendingUp, Utensils, Wallet } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -17,10 +16,10 @@ import {
   View,
 } from 'react-native';
 
+
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
-  const { t } = useLanguage();
   const {
     monthlyTarget,
     dailyBudgetAmount,
@@ -69,7 +68,7 @@ export default function HomeScreen() {
   };
 
   const getCurrentDate = () => {
-    return new Date().toLocaleDateString('en-US', {
+    return new Date().toLocaleDateString('ja-JP', {
       month: 'long',
       day: 'numeric',
       weekday: 'long',
@@ -94,6 +93,12 @@ export default function HomeScreen() {
     return 'over';
   };
 
+  // Header status pill appearance
+  const status = getBudgetStatus();
+  const statusLabel = status === 'over' ? '超過' : status === 'good' ? '余裕あり' : '絶好調';
+  const statusBg = status === 'over' ? '#FEEAEA' : '#E8F5E8';
+  const statusFg = status === 'over' ? '#FF3B30' : '#34C759';
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -115,7 +120,7 @@ export default function HomeScreen() {
                 <View style={styles.appIconContainer}>
                   <DollarSign size={28} color="#34C759" />
                 </View>
-                <Text style={styles.appName}>FoodMeter</Text>
+                <Text style={styles.appName}>食メーター</Text>
               </View>
               <Text style={styles.dateText}>{getCurrentDate()}</Text>
             </View>
@@ -126,9 +131,12 @@ export default function HomeScreen() {
         <View style={styles.budgetSection}>
           <View style={styles.budgetCard}>
             <View style={styles.budgetHeader}>
-              <Text style={styles.budgetTitle}>{t.todaysBudget}</Text>
-              <View style={styles.budgetBadge}>
-                <Wallet size={16} color="#007AFF" />
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Wallet size={20} color="#34C759" />
+                <Text style={[styles.budgetTitle, { marginLeft: 8 }]}>今日の食費</Text>
+              </View>
+              <View style={[styles.statusPill, { backgroundColor: statusBg }]}>
+                <Text style={[styles.statusPillText, { color: statusFg }]}>{statusLabel}</Text>
               </View>
             </View>
 
@@ -142,10 +150,10 @@ export default function HomeScreen() {
               >
                 <View style={styles.budgetCenter}>
                   <Text style={styles.budgetAmount}>
-                    ${Math.abs(todayRemaining).toLocaleString()}
+                    ¥{Math.abs(todayRemaining).toLocaleString()}
                   </Text>
                   <Text style={styles.budgetLabel}>
-                    {todayRemaining >= 0 ? t.left : t.over}
+                    {todayRemaining >= 0 ? '残り' : '超過'}
                   </Text>
                 </View>
               </CircularProgress>
@@ -153,13 +161,13 @@ export default function HomeScreen() {
 
             <View style={styles.budgetStats}>
               <View style={styles.budgetStat}>
-                <Text style={styles.budgetStatValue}>${dailyBudgetAmount.toLocaleString()}</Text>
-                <Text style={styles.budgetStatLabel}>{t.todaysBudget}</Text>
+                <Text style={styles.budgetStatValue}>¥{dailyBudgetAmount.toLocaleString()}</Text>
+                <Text style={styles.budgetStatLabel}>食費の上限</Text>
               </View>
               <View style={styles.budgetStatDivider} />
               <View style={styles.budgetStat}>
-                <Text style={styles.budgetStatValue}>${todaySpent.toLocaleString()}</Text>
-                <Text style={styles.budgetStatLabel}>{t.spent}</Text>
+                <Text style={styles.budgetStatValue}>¥{todaySpent.toLocaleString()}</Text>
+                <Text style={styles.budgetStatLabel}>使用済み</Text>
               </View>
             </View>
           </View>
@@ -172,15 +180,15 @@ export default function HomeScreen() {
               <View style={styles.statIcon}>
                 <TrendingUp size={20} color="#34C759" />
               </View>
-              <Text style={styles.statValue}>${totalSpent.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>{t.monthlySpent}</Text>
+              <Text style={styles.statValue}>¥{totalSpent.toLocaleString()}</Text>
+              <Text style={styles.statLabel}>今月使った金額</Text>
             </View>
             <View style={styles.statCard}>
               <View style={styles.statIcon}>
                 <Calendar size={20} color="#34C759" />
               </View>
               <Text style={styles.statValue}>{daysRemaining}</Text>
-              <Text style={styles.statLabel}>{t.daysLeft}</Text>
+              <Text style={styles.statLabel}>残りの日数</Text>
             </View>
           </View>
         </View>
@@ -188,8 +196,11 @@ export default function HomeScreen() {
         {/* Add Meal Section */}
         <View style={styles.mealSection}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t.addMeal}</Text>
-            <Text style={styles.sectionSubtitle}>{t.trackExpenses}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Plus size={20} color="#34C759" />
+              <Text style={[styles.sectionTitle, { marginLeft: 8 }]}>食事を追加</Text>
+            </View>
+            <Text style={styles.sectionSubtitle}>日々の支出を記録しましょう</Text>
           </View>
 
           <View style={styles.mealGrid}>
@@ -199,9 +210,9 @@ export default function HomeScreen() {
               activeOpacity={0.6}
             >
               <View style={[styles.mealIconContainer, { backgroundColor: '#FFE5B4' }]}>
-                <Coffee size={28} color="#D2691E" />
+                <Utensils size={28} color="#D2691E" />
               </View>
-              <Text style={styles.mealButtonText}>{t.breakfast}</Text>
+              <Text style={styles.mealButtonText}>朝食</Text>
               <View style={styles.addButton}>
                 <Plus size={16} color="white" />
               </View>
@@ -215,7 +226,7 @@ export default function HomeScreen() {
               <View style={[styles.mealIconContainer, { backgroundColor: '#FFD700' }]}>
                 <Sun size={28} color="#FF8C00" />
               </View>
-              <Text style={styles.mealButtonText}>{t.lunch}</Text>
+              <Text style={styles.mealButtonText}>昼食</Text>
               <View style={styles.addButton}>
                 <Plus size={16} color="white" />
               </View>
@@ -229,7 +240,7 @@ export default function HomeScreen() {
               <View style={[styles.mealIconContainer, { backgroundColor: '#E6E6FA' }]}>
                 <Moon size={28} color="#6A5ACD" />
               </View>
-              <Text style={styles.mealButtonText}>{t.dinner}</Text>
+              <Text style={styles.mealButtonText}>夕食</Text>
               <View style={styles.addButton}>
                 <Plus size={16} color="white" />
               </View>
@@ -240,9 +251,12 @@ export default function HomeScreen() {
         {/* Recent Meals */}
         <View style={styles.recentSection}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t.todaysMeals}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Utensils size={20} color="#34C759" />
+              <Text style={[styles.sectionTitle, { marginLeft: 8 }]}>今日の食事</Text>
+            </View>
             <TouchableOpacity>
-              <Text style={styles.seeAllText}>{t.seeAll}</Text>
+              <Text style={styles.seeAllText}>すべて見る</Text>
             </TouchableOpacity>
           </View>
 
@@ -260,10 +274,10 @@ export default function HomeScreen() {
           ) : (
             <View style={styles.emptyState}>
               <View style={styles.emptyIcon}>
-                <Coffee size={32} color="#34C759" />
+                <Utensils size={32} color="#34C759" />
               </View>
-              <Text style={styles.emptyTitle}>{t.noMealsYet}</Text>
-              <Text style={styles.emptySubtitle}>{t.startTracking}</Text>
+              <Text style={styles.emptyTitle}>まだ食事がありません</Text>
+              <Text style={styles.emptySubtitle}>日々の食費の記録を始めましょう</Text>
             </View>
           )}
         </View>
@@ -346,6 +360,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
+  statusPill: {
+    paddingHorizontal: 10,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusPillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
   budgetTitle: {
     fontSize: 22,
     fontWeight: '600',
@@ -370,7 +396,7 @@ const styles = StyleSheet.create({
   budgetAmount: {
     fontSize: 36,
     fontWeight: '700',
-    color: '#1D1D1F',
+    color: '#34C759',
     letterSpacing: -1,
     marginBottom: 4,
   },
@@ -381,13 +407,15 @@ const styles = StyleSheet.create({
   },
   budgetStats: {
     flexDirection: 'row',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 16,
-    padding: 20,
+    gap: 12,
+    marginTop: 16,
   },
   budgetStat: {
     flex: 1,
     alignItems: 'center',
+    backgroundColor: '#F5FAF5',
+    borderRadius: 14,
+    paddingVertical: 12,
   },
   budgetStatValue: {
     fontSize: 20,
@@ -401,9 +429,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   budgetStatDivider: {
-    width: 1,
-    backgroundColor: '#D1D1D6',
-    marginHorizontal: 20,
+    width: 0,
   },
   statsSection: {
     paddingHorizontal: 24,

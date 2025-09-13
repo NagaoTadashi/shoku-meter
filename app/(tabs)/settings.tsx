@@ -1,7 +1,6 @@
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { storage } from '@/utils/storage';
-import { Target, Trash2 } from 'lucide-react-native';
+import { Target, Trash2, TrendingUp, Database, Settings as SettingsIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -17,7 +16,6 @@ import {
 } from 'react-native';
 
 export default function SettingsScreen() {
-  const { t, language, setLanguage } = useLanguage();
   const { monthlyTarget, setMonthlyTarget, currentMonth } = useFoodBudget();
   const [targetInput, setTargetInput] = useState(monthlyTarget.toString());
   const [isEditing, setIsEditing] = useState(false);
@@ -26,18 +24,18 @@ export default function SettingsScreen() {
     const newTarget = parseFloat(targetInput);
 
     if (isNaN(newTarget) || newTarget <= 0) {
-      Alert.alert(t.error, t.invalidAmount);
+      Alert.alert('エラー', '有効な金額を入力してください');
       return;
     }
 
     if (newTarget > 1000000) {
-      Alert.alert(t.error, t.amountTooLarge);
+      Alert.alert('エラー', '金額が大きすぎます');
       return;
     }
 
     setMonthlyTarget(newTarget);
     setIsEditing(false);
-    Alert.alert(t.success, t.targetUpdated);
+    Alert.alert('成功', '月間目標金額を更新しました');
   };
 
   const handleCancelEdit = () => {
@@ -47,19 +45,19 @@ export default function SettingsScreen() {
 
   const handleClearData = () => {
     Alert.alert(
-      t.resetDataTitle,
-      t.resetDataMessage,
+      'データをリセット',
+      'すべてのデータが削除されます。この操作は取り消せません。本当に実行しますか？',
       [
-        { text: t.cancel, style: 'cancel' },
+        { text: 'キャンセル', style: 'cancel' },
         {
-          text: t.reset,
+          text: 'リセット',
           style: 'destructive',
           onPress: async () => {
             try {
               await storage.clearAll();
-              Alert.alert(t.resetComplete, t.resetCompleteMessage);
+              Alert.alert('完了', 'データをリセットしました。アプリを再起動してください。');
             } catch (error) {
-              Alert.alert(t.error, t.resetError);
+              Alert.alert('エラー', 'データのリセットに失敗しました');
             }
           }
         }
@@ -91,19 +89,22 @@ export default function SettingsScreen() {
       >
         <ScrollView style={styles.scrollView}>
           <View style={styles.header}>
-            <Text style={styles.title}>{t.settings}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <SettingsIcon size={32} color="#34C759" />
+              <Text style={[styles.title, { marginLeft: 8 }]}>設定</Text>
+            </View>
           </View>
 
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Target size={20} color="#34C759" />
-              <Text style={styles.sectionTitle}>{t.monthlyTarget}</Text>
+              <Text style={[styles.sectionTitle, { marginLeft: 8 }]}>月間目標</Text>
             </View>
 
             <View style={styles.targetCard}>
-              <Text style={styles.targetLabel}>{t.targetAmount}</Text>
+              <Text style={styles.targetLabel}>目標金額</Text>
               <View style={styles.targetInputContainer}>
-                <Text style={styles.currencySymbol}>$</Text>
+                <Text style={styles.currencySymbol}>¥</Text>
                 <TextInput
                   style={[
                     styles.targetInput,
@@ -124,13 +125,13 @@ export default function SettingsScreen() {
                       style={styles.cancelButton}
                       onPress={handleCancelEdit}
                     >
-                      <Text style={styles.cancelButtonText}>{t.cancel}</Text>
+                      <Text style={styles.cancelButtonText}>キャンセル</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.updateButton}
                       onPress={handleUpdateTarget}
                     >
-                      <Text style={styles.updateButtonText}>{t.update}</Text>
+                      <Text style={styles.updateButtonText}>更新</Text>
                     </TouchableOpacity>
                   </>
                 ) : (
@@ -138,74 +139,31 @@ export default function SettingsScreen() {
                     style={styles.editButton}
                     onPress={() => setIsEditing(true)}
                   >
-                    <Text style={styles.editButtonText}>{t.edit}</Text>
+                    <Text style={styles.editButtonText}>編集</Text>
                   </TouchableOpacity>
                 )}
               </View>
             </View>
           </View>
 
+          {/** Language selection removed: Japanese only */}
+
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t.language}</Text>
-
-            <View style={styles.languageCard}>
-              <TouchableOpacity
-                style={[
-                  styles.languageOption,
-                  language === 'en' && styles.languageOptionActive
-                ]}
-                onPress={() => setLanguage('en')}
-              >
-                <Text style={[
-                  styles.languageText,
-                  language === 'en' && styles.languageTextActive
-                ]}>
-                  English
-                </Text>
-                {language === 'en' && (
-                  <View style={styles.checkmark}>
-                    <Text style={styles.checkmarkText}>✓</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-
-              <View style={styles.languageDivider} />
-
-              <TouchableOpacity
-                style={[
-                  styles.languageOption,
-                  language === 'ja' && styles.languageOptionActive
-                ]}
-                onPress={() => setLanguage('ja')}
-              >
-                <Text style={[
-                  styles.languageText,
-                  language === 'ja' && styles.languageTextActive
-                ]}>
-                  日本語
-                </Text>
-                {language === 'ja' && (
-                  <View style={styles.checkmark}>
-                    <Text style={styles.checkmarkText}>✓</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
+            <View style={styles.sectionHeader}>
+              <TrendingUp size={20} color="#34C759" />
+              <Text style={[styles.sectionTitle, { marginLeft: 8 }]}>月間統計</Text>
             </View>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t.monthlyStatistics}</Text>
 
             <View style={styles.statsCard}>
               <View style={styles.statRow}>
-                <Text style={styles.statLabel}>{t.monthlySpent}</Text>
+                <Text style={styles.statLabel}>月間使用額</Text>
                 <Text style={styles.statValue}>
-                  ${currentMonth.totalSpent.toLocaleString()}
+                  ¥{currentMonth.totalSpent.toLocaleString()}
                 </Text>
               </View>
 
               <View style={styles.statRow}>
-                <Text style={styles.statLabel}>{t.progress}</Text>
+                <Text style={styles.statLabel}>進捗</Text>
                 <Text style={[
                   styles.statValue,
                   { color: parseFloat(stats.progressPercentage) > 100 ? '#FF3B30' : '#34C759' }
@@ -215,37 +173,40 @@ export default function SettingsScreen() {
               </View>
 
               <View style={styles.statRow}>
-                <Text style={styles.statLabel}>{t.dailyAverage}</Text>
+                <Text style={styles.statLabel}>1日平均</Text>
                 <Text style={styles.statValue}>
-                  ${stats.dailyAverage.toLocaleString()}
+                  ¥{stats.dailyAverage.toLocaleString()}
                 </Text>
               </View>
 
               <View style={styles.statRow}>
-                <Text style={styles.statLabel}>{t.daysElapsed}</Text>
+                <Text style={styles.statLabel}>経過日数</Text>
                 <Text style={styles.statValue}>
-                  {stats.currentDay}/{stats.daysInMonth} days
+                  {stats.currentDay}/{stats.daysInMonth} 日
                 </Text>
               </View>
             </View>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t.dataManagement}</Text>
+            <View style={styles.sectionHeader}>
+              <Database size={20} color="#34C759" />
+              <Text style={[styles.sectionTitle, { marginLeft: 8 }]}>データ管理</Text>
+            </View>
 
             <TouchableOpacity
               style={styles.dangerButton}
               onPress={handleClearData}
             >
               <Trash2 size={18} color="#FF3B30" />
-              <Text style={styles.dangerButtonText}>{t.resetAllData}</Text>
+              <Text style={styles.dangerButtonText}>すべてのデータをリセット</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>FoodMeter v1.0.0</Text>
             <Text style={styles.footerSubtext}>
-              Supporting healthy eating habits
+              健康的な食生活をサポート
             </Text>
           </View>
         </ScrollView>

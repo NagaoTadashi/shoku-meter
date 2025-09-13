@@ -1,6 +1,5 @@
-import { useLanguage } from '@/contexts/LanguageContext';
 import { MealEntry } from '@/types';
-import { Coffee, CreditCard as Edit3, Moon, Sun, Trash2 } from 'lucide-react-native';
+import { Coffee, Moon, Pen, Sun, Trash2 } from 'lucide-react-native';
 import React from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -24,24 +23,23 @@ const getMealIcon = (type: MealEntry['type']) => {
 };
 
 export default function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
-  const { t } = useLanguage();
 
   const getMealDisplayName = (type: MealEntry['type']) => {
     switch (type) {
-      case 'breakfast': return t.breakfast;
-      case 'lunch': return t.lunch;
-      case 'dinner': return t.dinner;
+      case 'breakfast': return '朝食';
+      case 'lunch': return '昼食';
+      case 'dinner': return '夕食';
       default: return '';
     }
   };
 
   const handleDelete = () => {
     Alert.alert(
-      t.deleteMeal,
-      t.deleteMealConfirm,
+      '食事を削除',
+      'この食事の記録を削除してもよろしいですか？',
       [
-        { text: t.cancel, style: 'cancel' },
-        { text: t.delete, style: 'destructive', onPress: () => onDelete(meal.id) }
+        { text: 'キャンセル', style: 'cancel' },
+        { text: '削除', style: 'destructive', onPress: () => onDelete(meal.id) }
       ]
     );
   };
@@ -57,7 +55,7 @@ export default function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
           <Text style={styles.time}>{meal.time}</Text>
         </View>
         <View style={styles.rightSection}>
-          <Text style={styles.amount}>${meal.amount.toLocaleString()}</Text>
+          <Text style={styles.amount}>¥{meal.amount.toLocaleString()}</Text>
         </View>
       </View>
       <View style={styles.actions}>
@@ -67,7 +65,7 @@ export default function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
             onPress={() => onEdit(meal)}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Edit3 size={18} color="#34C759" />
+            <Pen size={18} color="#34C759" />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}

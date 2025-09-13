@@ -10,6 +10,7 @@ export interface DailyBudget {
   date: string;
   totalSpent: number;
   meals: MealEntry[];
+  dailyLimit?: number;
 }
 
 export interface MonthlyBudget {

@@ -1,4 +1,3 @@
-import { useLanguage } from '@/contexts/LanguageContext';
 import { MealEntry } from '@/types';
 import { X } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
@@ -33,7 +32,6 @@ export default function MealInputModal({
   editingMeal,
   onSubmit
 }: MealInputModalProps) {
-  const { t } = useLanguage();
   const [amount, setAmount] = useState('');
 
   useEffect(() => {
@@ -46,14 +44,11 @@ export default function MealInputModal({
     const numericAmount = parseFloat(amount);
 
     if (isNaN(numericAmount) || numericAmount <= 0) {
-      Alert.alert(t.error, t.invalidAmount);
+      Alert.alert('エラー', '有効な金額を入力してください');
       return;
     }
 
-    if (numericAmount > 500) {
-      Alert.alert(t.error, t.amountTooLarge);
-      return;
-    }
+    // 上限なし: 500円の上限チェックを撤廃
 
     onSubmit(numericAmount);
     onClose();
@@ -67,16 +62,16 @@ export default function MealInputModal({
   const getMealTitle = () => {
     if (editingMeal) {
       switch (mealType) {
-        case 'breakfast': return t.editBreakfast;
-        case 'lunch': return t.editLunch;
-        case 'dinner': return t.editDinner;
+        case 'breakfast': return '朝食を編集';
+        case 'lunch': return '昼食を編集';
+        case 'dinner': return '夕食を編集';
         default: return '';
       }
     } else {
       switch (mealType) {
-        case 'breakfast': return t.addBreakfast;
-        case 'lunch': return t.addLunch;
-        case 'dinner': return t.addDinner;
+        case 'breakfast': return '朝食を追加';
+        case 'lunch': return '昼食を追加';
+        case 'dinner': return '夕食を追加';
         default: return '';
       }
     }
@@ -113,9 +108,9 @@ export default function MealInputModal({
             </View>
 
             <View style={styles.content}>
-              <Text style={styles.label}>{t.amount}</Text>
+              <Text style={styles.label}>金額</Text>
               <View style={styles.inputContainer}>
-                <Text style={styles.currencySymbol}>$</Text>
+                <Text style={styles.currencySymbol}>¥</Text>
                 <TextInput
                   style={styles.input}
                   value={amount}
@@ -133,14 +128,14 @@ export default function MealInputModal({
                 style={styles.cancelButton}
                 onPress={handleClose}
               >
-                <Text style={styles.cancelButtonText}>{t.cancel}</Text>
+                <Text style={styles.cancelButtonText}>キャンセル</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.submitButton}
                 onPress={handleSubmit}
               >
                 <Text style={styles.submitButtonText}>
-                  {editingMeal ? t.update : t.add}
+                  {editingMeal ? '更新' : '追加'}
                 </Text>
               </TouchableOpacity>
             </View>

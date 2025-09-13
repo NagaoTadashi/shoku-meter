@@ -1,11 +1,8 @@
 import { FoodBudgetProvider } from '@/contexts/FoodBudgetContext';
-import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { Tabs } from 'expo-router';
 import { Chrome as Home, Settings } from 'lucide-react-native';
 
 function TabsContent() {
-  const { t } = useLanguage();
-
   return (
     <FoodBudgetProvider>
       <Tabs
@@ -35,7 +32,7 @@ function TabsContent() {
         <Tabs.Screen
           name="index"
           options={{
-            title: t.home,
+            title: 'ホーム',
             tabBarIcon: ({ size, color }) => (
               <Home size={24} color={color} />
             ),
@@ -44,7 +41,7 @@ function TabsContent() {
         <Tabs.Screen
           name="settings"
           options={{
-            title: t.settings,
+            title: '設定',
             tabBarIcon: ({ size, color }) => (
               <Settings size={24} color={color} />
             ),
@@ -56,9 +53,5 @@ function TabsContent() {
 }
 
 export default function TabLayout() {
-  return (
-    <LanguageProvider>
-      <TabsContent />
-    </LanguageProvider>
-  );
+  return <TabsContent />;
 }
