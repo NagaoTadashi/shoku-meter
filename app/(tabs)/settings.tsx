@@ -1,6 +1,6 @@
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { storage } from '@/utils/storage';
-import { Target, Trash2, TrendingUp, Database, Settings as SettingsIcon } from 'lucide-react-native';
+import { Database, Settings as SettingsIcon, Target, Trash2, TrendingUp } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 
 export default function SettingsScreen() {
   const { monthlyTarget, setMonthlyTarget, currentMonth } = useFoodBudget();
@@ -80,6 +81,8 @@ export default function SettingsScreen() {
   };
 
   const stats = getCurrentMonthStats();
+  const progressPct = Math.min(parseFloat(stats.progressPercentage), 100);
+  const isOver = parseFloat(stats.progressPercentage) > 100;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -155,20 +158,20 @@ export default function SettingsScreen() {
             </View>
 
             <View style={styles.statsCard}>
-              <View style={styles.statRow}>
-                <Text style={styles.statLabel}>月間使用額</Text>
-                <Text style={styles.statValue}>
-                  ¥{currentMonth.totalSpent.toLocaleString()}
+              {/* Progress graph */}
+              <View style={styles.progressHeader}>
+                <Text style={styles.statLabel}>進捗</Text>
+                <Text style={[styles.statValue, { color: isOver ? '#FF3B30' : '#34C759' }]}>
+                  {stats.progressPercentage}%
                 </Text>
               </View>
-
+              <View style={styles.progressBarContainer}>
+                <View style={[styles.progressBarFill, { width: `${progressPct}%`, backgroundColor: isOver ? '#FF3B30' : '#34C759' }]} />
+              </View>
               <View style={styles.statRow}>
-                <Text style={styles.statLabel}>進捗</Text>
-                <Text style={[
-                  styles.statValue,
-                  { color: parseFloat(stats.progressPercentage) > 100 ? '#FF3B30' : '#34C759' }
-                ]}>
-                  {stats.progressPercentage}%
+                <Text style={styles.statLabel}>今月使った金額</Text>
+                <Text style={styles.statValue}>
+                  ¥{currentMonth.totalSpent.toLocaleString()}
                 </Text>
               </View>
 
@@ -204,9 +207,9 @@ export default function SettingsScreen() {
           </View>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>FoodMeter v1.0.0</Text>
+            <Text style={styles.footerText}>食メーター v1.0.0</Text>
             <Text style={styles.footerSubtext}>
-              健康的な食生活をサポート
+              食費の徹底的な管理をサポート
             </Text>
           </View>
         </ScrollView>
@@ -262,6 +265,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.03,
     shadowRadius: 12,
     elevation: 4,
+    borderWidth: 1,
+    borderColor: '#EEF2EF',
   },
   targetLabel: {
     fontSize: 15,
@@ -344,6 +349,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.03,
     shadowRadius: 12,
     elevation: 4,
+    borderWidth: 1,
+    borderColor: '#EEF2EF',
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  progressBarContainer: {
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#F2F2F7',
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 5,
   },
   statRow: {
     flexDirection: 'row',
