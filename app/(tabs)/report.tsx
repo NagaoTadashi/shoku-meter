@@ -116,9 +116,8 @@ export default function ReportScreen() {
                 {ticks.map((v, i) => {
                   const y = chartPadding + (chartHeight - (v / maxValue) * chartHeight);
                   return (
-                    <>
+                    <React.Fragment key={`yfrag-${i}`}>
                       <Line
-                        key={`ytick-${i}`}
                         x1={xStart - 4}
                         y1={y}
                         x2={xStart}
@@ -128,7 +127,6 @@ export default function ReportScreen() {
                       />
                       {/* Horizontal grid line */}
                       <Line
-                        key={`ygrid-${i}`}
                         x1={xStart}
                         y1={y}
                         x2={xEnd}
@@ -137,7 +135,6 @@ export default function ReportScreen() {
                         strokeWidth={1}
                       />
                       <SvgText
-                        key={`ylabel-${i}`}
                         x={xStart - 8}
                         y={y + 4}
                         fontSize={10}
@@ -146,7 +143,7 @@ export default function ReportScreen() {
                       >
                         {`¥${v.toLocaleString()}`}
                       </SvgText>
-                    </>
+                    </React.Fragment>
                   );
                 })}
 

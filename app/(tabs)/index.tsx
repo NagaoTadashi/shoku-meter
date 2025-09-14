@@ -3,7 +3,7 @@ import MealCard from '@/components/MealCard';
 import MealInputModal from '@/components/MealInputModal';
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { MealEntry } from '@/types';
-import { Calendar, Coffee, Moon, Plus, Sun, Utensils, Wallet } from 'lucide-react-native';
+import { Coffee, Moon, Plus, Sun, Utensils, Wallet } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -112,14 +112,9 @@ export default function HomeScreen() {
           />
         }
       >
-        {/* Header */}
+        {/* Header (date pill removed) */}
         <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <View style={styles.datePill}>
-              <Calendar size={14} color="#34C759" />
-              <Text style={styles.datePillText}>{getCurrentDate()}</Text>
-            </View>
-          </View>
+          <View style={styles.headerContent} />
         </View>
 
         {/* Main Budget Card */}
@@ -131,10 +126,11 @@ export default function HomeScreen() {
                 <Text style={[styles.budgetTitle, { marginLeft: 8 }]}>今日の食費</Text>
               </View>
               <View style={[styles.statusPill, { backgroundColor: statusBg }]}>
-                <Text style={[styles.statusPillText, { color: statusFg }]}>{statusLabel}</Text>
+                <Text style={styles.statusPillDate}>{getCurrentDate()}</Text>
               </View>
             </View>
 
+            {/* サマリー見出しは非表示 */}
             <View style={styles.circularProgressContainer}>
               <CircularProgress
                 size={180}
@@ -154,15 +150,17 @@ export default function HomeScreen() {
               </CircularProgress>
             </View>
 
-            <View style={styles.budgetStats}>
-              <View style={styles.budgetStat}>
-                <Text style={styles.budgetStatValue}>¥{dailyBudgetAmount.toLocaleString()}</Text>
-                <Text style={styles.budgetStatLabel}>食費の上限</Text>
+            <View style={styles.sectionDivider} />
+
+            {/* 内訳（横並びで個別枠表示） */}
+            <View style={styles.miniCardsRow}>
+              <View style={[styles.miniCard, styles.miniCardCenter, status === 'over' && { borderColor: '#FFCDD2', backgroundColor: '#FFF5F5' }]}>
+                <Text style={[styles.miniCardLabel, styles.centerText]}>使用済み</Text>
+                <Text style={[styles.miniCardValue, styles.centerText, { color: status === 'over' ? '#FF3B30' : '#1D1D1F' }]}>¥{todaySpent.toLocaleString()}</Text>
               </View>
-              <View style={styles.budgetStatDivider} />
-              <View style={styles.budgetStat}>
-                <Text style={styles.budgetStatValue}>¥{todaySpent.toLocaleString()}</Text>
-                <Text style={styles.budgetStatLabel}>使用済み</Text>
+              <View style={[styles.miniCard, styles.miniCardCenter]}>
+                <Text style={[styles.miniCardLabel, styles.centerText]}>使える金額</Text>
+                <Text style={[styles.miniCardValue, styles.centerText]}>¥{dailyBudgetAmount.toLocaleString()}</Text>
               </View>
             </View>
           </View>
@@ -343,7 +341,8 @@ const styles = StyleSheet.create({
   },
   statusPill: {
     paddingHorizontal: 10,
-    height: 22,
+    minHeight: 22,
+    paddingVertical: 6,
     borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
@@ -352,6 +351,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  statusPillDate: {
+    marginTop: 2,
+    fontSize: 10,
+    color: '#6B7280',
+    fontWeight: '600',
   },
   budgetTitle: {
     fontSize: 22,
@@ -369,6 +374,49 @@ const styles = StyleSheet.create({
   circularProgressContainer: {
     alignItems: 'center',
     marginBottom: 28,
+  },
+  subSectionTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#6B7280',
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+  sectionDivider: {
+    height: 1,
+    backgroundColor: '#F2F2F7',
+    marginBottom: 16,
+  },
+  miniCardsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  miniCard: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    borderWidth: 1,
+    borderColor: '#EEF2EF',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  miniCardCenter: {
+    alignItems: 'center',
+  },
+  centerText: {
+    textAlign: 'center',
+  },
+  miniCardLabel: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  miniCardValue: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1D1D1F',
   },
   budgetCenter: {
     alignItems: 'center',
@@ -398,10 +446,11 @@ const styles = StyleSheet.create({
   },
   budgetStat: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#F5FAF5',
     borderRadius: 14,
     paddingVertical: 12,
+    paddingHorizontal: 12,
   },
   budgetStatValue: {
     fontSize: 20,
