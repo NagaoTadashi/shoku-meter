@@ -3,7 +3,7 @@ import MealCard from '@/components/MealCard';
 import MealInputModal from '@/components/MealInputModal';
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { MealEntry } from '@/types';
-import { Calendar, DollarSign, Moon, Plus, Sun, TrendingUp, Utensils, Wallet } from 'lucide-react-native';
+import { Calendar, Moon, Plus, Sun, TrendingUp, Utensils, Wallet } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -13,7 +13,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 
@@ -115,14 +115,9 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <View style={styles.appBranding}>
-              <View style={styles.appHeader}>
-                <View style={styles.appIconContainer}>
-                  <DollarSign size={28} color="#34C759" />
-                </View>
-                <Text style={styles.appName}>食メーター</Text>
-              </View>
-              <Text style={styles.dateText}>{getCurrentDate()}</Text>
+            <View style={styles.datePill}>
+              <Calendar size={14} color="#34C759" />
+              <Text style={styles.datePillText}>{getCurrentDate()}</Text>
             </View>
           </View>
         </View>
@@ -320,25 +315,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  appIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    backgroundColor: '#E8F5E8',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
   appName: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#1D1D1F',
+    color: '#34C759',
     letterSpacing: -0.5,
   },
-  dateText: {
-    fontSize: 17,
-    color: '#86868B',
-    fontWeight: '500',
+  datePill: {
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#EEF2EF',
+  },
+  datePillText: {
+    fontSize: 13,
+    color: '#1D1D1F',
+    fontWeight: '600',
   },
   budgetSection: {
     paddingHorizontal: 24,
