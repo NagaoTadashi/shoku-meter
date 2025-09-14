@@ -52,7 +52,6 @@ export default function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
         </View>
         <View style={styles.info}>
           <Text style={styles.mealName}>{getMealDisplayName(meal.type)}</Text>
-          {/* 時間は表示しない */}
         </View>
         <View style={styles.rightSection}>
           <Text style={styles.amount}>¥{meal.amount.toLocaleString()}</Text>
@@ -119,11 +118,7 @@ const styles = StyleSheet.create({
     color: '#1D1D1F',
     marginBottom: 4,
   },
-  time: {
-    fontSize: 13,
-    color: '#86868B',
-    fontWeight: '500',
-  },
+  // removed time style (time not displayed)
   rightSection: {
     alignItems: 'center',
   },

@@ -5,28 +5,16 @@ import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { MealEntry } from '@/types';
 import { Coffee, Moon, Plus, Sun, Utensils, Wallet } from 'lucide-react-native';
 import React, { useState } from 'react';
-import {
-  Dimensions,
-  RefreshControl,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
-const { width } = Dimensions.get('window');
+// Dimensions width was unused; removed
 
 export default function HomeScreen() {
   const {
-    monthlyTarget,
     dailyBudgetAmount,
     todaySpent,
     todayRemaining,
-    daysRemaining,
-    currentMonth,
     addMealEntry,
     updateMealEntry,
     deleteMealEntry,
@@ -39,8 +27,6 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const todayMeals = getTodayMeals();
-  const totalSpent = currentMonth.totalSpent;
-  const remainingBudget = monthlyTarget - totalSpent;
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -75,9 +61,7 @@ export default function HomeScreen() {
     });
   };
 
-  const getProgressPercentage = () => {
-    return Math.min((todaySpent / dailyBudgetAmount) * 100, 100);
-  };
+  // removed unused getProgressPercentage
 
   const getCircularProgress = () => {
     if (dailyBudgetAmount === 0) {
@@ -95,9 +79,7 @@ export default function HomeScreen() {
 
   // Header status pill appearance
   const status = getBudgetStatus();
-  const statusLabel = status === 'over' ? '超過' : status === 'good' ? '余裕あり' : '絶好調';
   const statusBg = status === 'over' ? '#FEEAEA' : '#E8F5E8';
-  const statusFg = status === 'over' ? '#FF3B30' : '#34C759';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -286,37 +268,7 @@ const styles = StyleSheet.create({
   headerContent: {
     alignItems: 'flex-start',
   },
-  appBranding: {
-    alignItems: 'flex-start',
-  },
-  appHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  appName: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#34C759',
-    letterSpacing: -0.5,
-  },
-  datePill: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 10,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#F0FDF4',
-    borderWidth: 1,
-    borderColor: '#EEF2EF',
-  },
-  datePillText: {
-    fontSize: 13,
-    color: '#1D1D1F',
-    fontWeight: '600',
-  },
+  // removed old header date pill styles (not used)
   budgetSection: {
     paddingHorizontal: 24,
     marginBottom: 32,
@@ -347,11 +299,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  statusPillText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
+  // removed statusPillText as label text is no longer shown
   statusPillDate: {
     marginTop: 2,
     fontSize: 10,
@@ -363,25 +311,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1D1D1F',
   },
-  budgetBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#E8F5E8',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  // removed budgetBadge (unused)
   circularProgressContainer: {
     alignItems: 'center',
     marginBottom: 28,
   },
-  subSectionTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#6B7280',
-    marginBottom: 8,
-    marginLeft: 4,
-  },
+  // removed subSectionTitle (headings hidden)
   sectionDivider: {
     height: 1,
     backgroundColor: '#F2F2F7',
@@ -434,80 +369,8 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontWeight: '600',
   },
-  budgetStats: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-    padding: 16,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#EEF2EF',
-  },
-  budgetStat: {
-    flex: 1,
-    alignItems: 'flex-start',
-    backgroundColor: '#F5FAF5',
-    borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-  },
-  budgetStatValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1D1D1F',
-    marginBottom: 2,
-  },
-  budgetStatLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '600',
-  },
-  budgetStatDivider: {
-    width: 0,
-  },
-  statsSection: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#EEF2EF',
-  },
-  statIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#F0FDF4',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1D1D1F',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 13,
-    color: '#86868B',
-    fontWeight: '500',
-  },
+  // removed old inline stats styles (replaced by mini cards)
+  // removed old Quick Stats styles (section no longer shown)
   mealSection: {
     paddingHorizontal: 24,
     marginBottom: 32,
