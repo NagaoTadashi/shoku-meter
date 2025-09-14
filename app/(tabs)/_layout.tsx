@@ -1,6 +1,6 @@
 import { FoodBudgetProvider } from '@/contexts/FoodBudgetContext';
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Settings } from 'lucide-react-native';
+import { Chrome as Home, Settings, TrendingUp } from 'lucide-react-native';
 
 function TabsContent() {
   return (
@@ -35,6 +35,15 @@ function TabsContent() {
             title: 'ホーム',
             tabBarIcon: ({ size, color }) => (
               <Home size={24} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="report"
+          options={{
+            title: 'レポート',
+            tabBarIcon: ({ size, color }) => (
+              <TrendingUp size={24} color={color} />
             ),
           }}
         />

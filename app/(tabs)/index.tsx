@@ -3,7 +3,7 @@ import MealCard from '@/components/MealCard';
 import MealInputModal from '@/components/MealInputModal';
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { MealEntry } from '@/types';
-import { Calendar, Moon, Plus, Sun, TrendingUp, Utensils, Wallet } from 'lucide-react-native';
+import { Calendar, Coffee, Moon, Plus, Sun, Utensils, Wallet } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -168,25 +168,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Quick Stats */}
-        <View style={styles.statsSection}>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <View style={styles.statIcon}>
-                <TrendingUp size={20} color="#34C759" />
-              </View>
-              <Text style={styles.statValue}>¥{totalSpent.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>今月使った金額</Text>
-            </View>
-            <View style={styles.statCard}>
-              <View style={styles.statIcon}>
-                <Calendar size={20} color="#34C759" />
-              </View>
-              <Text style={styles.statValue}>{daysRemaining}</Text>
-              <Text style={styles.statLabel}>残りの日数</Text>
-            </View>
-          </View>
-        </View>
 
         {/* Add Meal Section */}
         <View style={styles.mealSection}>
@@ -205,7 +186,7 @@ export default function HomeScreen() {
               activeOpacity={0.6}
             >
               <View style={[styles.mealIconContainer, { backgroundColor: '#FFE5B4' }]}>
-                <Utensils size={28} color="#D2691E" />
+                <Coffee size={28} color="#D2691E" />
               </View>
               <Text style={styles.mealButtonText}>朝食</Text>
               <View style={styles.addButton}>

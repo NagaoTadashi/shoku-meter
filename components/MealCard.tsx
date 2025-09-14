@@ -52,7 +52,7 @@ export default function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
         </View>
         <View style={styles.info}>
           <Text style={styles.mealName}>{getMealDisplayName(meal.type)}</Text>
-          <Text style={styles.time}>{meal.time}</Text>
+          {/* 時間は表示しない */}
         </View>
         <View style={styles.rightSection}>
           <Text style={styles.amount}>¥{meal.amount.toLocaleString()}</Text>

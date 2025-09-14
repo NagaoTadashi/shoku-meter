@@ -1,6 +1,6 @@
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { storage } from '@/utils/storage';
-import { Database, Settings as SettingsIcon, Target, Trash2, TrendingUp } from 'lucide-react-native';
+import { Database, Settings as SettingsIcon, Target, Trash2 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -17,7 +17,7 @@ import {
 
 
 export default function SettingsScreen() {
-  const { monthlyTarget, setMonthlyTarget, currentMonth } = useFoodBudget();
+  const { monthlyTarget, setMonthlyTarget } = useFoodBudget();
   const [targetInput, setTargetInput] = useState(monthlyTarget.toString());
   const [isEditing, setIsEditing] = useState(false);
 
@@ -66,23 +66,7 @@ export default function SettingsScreen() {
     );
   };
 
-  const getCurrentMonthStats = () => {
-    const now = new Date();
-    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-    const currentDay = now.getDate();
-    const progressPercentage = ((currentMonth.totalSpent / monthlyTarget) * 100).toFixed(1);
-
-    return {
-      daysInMonth,
-      currentDay,
-      progressPercentage,
-      dailyAverage: Math.round(currentMonth.totalSpent / currentDay),
-    };
-  };
-
-  const stats = getCurrentMonthStats();
-  const progressPct = Math.min(parseFloat(stats.progressPercentage), 100);
-  const isOver = parseFloat(stats.progressPercentage) > 100;
+  // 月間統計はレポートタブへ移動
 
   return (
     <SafeAreaView style={styles.container}>
@@ -151,45 +135,7 @@ export default function SettingsScreen() {
 
           {/** Language selection removed: Japanese only */}
 
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <TrendingUp size={20} color="#34C759" />
-              <Text style={[styles.sectionTitle, { marginLeft: 8 }]}>月間統計</Text>
-            </View>
-
-            <View style={styles.statsCard}>
-              {/* Progress graph */}
-              <View style={styles.progressHeader}>
-                <Text style={styles.statLabel}>進捗</Text>
-                <Text style={[styles.statValue, { color: isOver ? '#FF3B30' : '#34C759' }]}>
-                  {stats.progressPercentage}%
-                </Text>
-              </View>
-              <View style={styles.progressBarContainer}>
-                <View style={[styles.progressBarFill, { width: `${progressPct}%`, backgroundColor: isOver ? '#FF3B30' : '#34C759' }]} />
-              </View>
-              <View style={styles.statRow}>
-                <Text style={styles.statLabel}>今月使った金額</Text>
-                <Text style={styles.statValue}>
-                  ¥{currentMonth.totalSpent.toLocaleString()}
-                </Text>
-              </View>
-
-              <View style={styles.statRow}>
-                <Text style={styles.statLabel}>1日平均</Text>
-                <Text style={styles.statValue}>
-                  ¥{stats.dailyAverage.toLocaleString()}
-                </Text>
-              </View>
-
-              <View style={styles.statRow}>
-                <Text style={styles.statLabel}>経過日数</Text>
-                <Text style={styles.statValue}>
-                  {stats.currentDay}/{stats.daysInMonth} 日
-                </Text>
-              </View>
-            </View>
-          </View>
+          {/* 月間統計セクションはレポートへ切り出し済みのため削除 */}
 
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
