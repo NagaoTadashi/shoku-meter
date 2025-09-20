@@ -1,6 +1,6 @@
 import CircularProgress from '@/components/CircularProgress';
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
-import { TrendingUp, Wallet } from 'lucide-react-native';
+import { BarChartBig, Wallet } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
@@ -119,7 +119,7 @@ export default function ReportScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TrendingUp size={32} color="#34C759" />
+            <BarChartBig size={32} color="#34C759" />
             <Text style={[styles.title, { marginLeft: 8 }]}>レポート</Text>
           </View>
           <Text style={styles.subtitle}>{monthLabel}の支出をビジュアルで確認</Text>
@@ -183,7 +183,7 @@ export default function ReportScreen() {
           </View>
           <View style={styles.divider} />
           <View style={styles.remainingColumn}>
-            <Text style={styles.remainingLabel}>1日あたりの使用可能額</Text>
+            <Text style={styles.remainingLabel}>1日あたりの食費目安</Text>
             <Text style={styles.remainingValue}>¥{dailyAllowanceDisplay.toLocaleString()}</Text>
           </View>
         </View>
