@@ -1,14 +1,73 @@
 import CircularProgress from '@/components/CircularProgress';
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
-import { BarChartBig, Wallet } from 'lucide-react-native';
-import React, { useMemo } from 'react';
-import { Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BarChartBig, Lock, Wallet } from 'lucide-react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Purchases from 'react-native-purchases';
+import RevenueCatUI from 'react-native-purchases-ui';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
 
 export default function ReportScreen() {
   const { monthlyTarget, currentMonth } = useFoodBudget();
+  const [isSubscribed, setIsSubscribed] = useState<boolean | null>(null);
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchSubscriptionStatus = async () => {
+      try {
+        const customerInfo = await Purchases.getCustomerInfo();
+        const entitlement = customerInfo.entitlements.active['shokumeter_premium'];
+        console.log(Boolean(entitlement))
+        if (isMounted) {
+          setIsSubscribed(Boolean(entitlement));
+        }
+      } catch (error) {
+        if (isMounted) {
+          setIsSubscribed(false);
+        }
+      } finally {
+        if (isMounted) {
+          setIsCheckingSubscription(false);
+        }
+      }
+    };
+
+    fetchSubscriptionStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handlePresentPaywall = async () => {
+    try {
+      const result = await RevenueCatUI.presentPaywallIfNeeded({
+        requiredEntitlementIdentifier: 'shokumeter_premium',
+      });
+
+      if (
+        result === RevenueCatUI.PAYWALL_RESULT.PURCHASED ||
+        result === RevenueCatUI.PAYWALL_RESULT.RESTORED
+      ) {
+        setIsCheckingSubscription(true);
+        try {
+          const customerInfo = await Purchases.getCustomerInfo();
+          const entitlement = customerInfo.entitlements.active['shokumeter_premium'];
+          setIsSubscribed(Boolean(entitlement));
+        } catch (refreshError) {
+          console.warn('Failed to refresh subscription status', refreshError);
+        } finally {
+          setIsCheckingSubscription(false);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to present paywall', error);
+    }
+  };
 
   const {
     remainingDays,
@@ -115,169 +174,262 @@ export default function ReportScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <BarChartBig size={32} color="#34C759" />
-            <Text style={[styles.title, { marginLeft: 8 }]}>レポート</Text>
+    isCheckingSubscription ? (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#34C759" />
+        <Text style={styles.loadingText}>読み込み中...</Text>
+      </SafeAreaView>
+    ) : !isSubscribed ? (
+      <SafeAreaView style={styles.subscribeContainer}>
+        <View style={styles.subscribeCard}>
+          <View style={styles.subscribeBadge}>
+            <Lock size={18} color="#1F2937" />
+            <Text style={styles.subscribeBadgeText}>レポートはプレミアム限定です</Text>
           </View>
-          <Text style={styles.subtitle}>{monthLabel}の支出をビジュアルで確認</Text>
+
+          <TouchableOpacity style={styles.subscribeButton} onPress={handlePresentPaywall}>
+            <Text style={styles.subscribeButtonText}>プレミアムプランに加入する</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Summary with circular progress and key stats */}
-        <View style={styles.budgetSection}>
-          <View style={styles.budgetCard}>
-            <View style={styles.budgetHeader}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Wallet size={20} color="#34C759" />
-                <Text style={[styles.budgetTitle, { marginLeft: 8 }]}>今月の食費</Text>
-              </View>
-              <View style={[styles.statusPill, { backgroundColor: statusBg }]}>
-                <Text style={styles.statusPillDate}>{monthLabel}</Text>
-              </View>
+      </SafeAreaView>
+    ) : (
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <BarChartBig size={32} color="#34C759" />
+              <Text style={[styles.title, { marginLeft: 8 }]}>レポート</Text>
             </View>
+            <Text style={styles.subtitle}>{monthLabel}の支出をビジュアルで確認</Text>
+          </View>
 
-            <View style={styles.circularProgressContainer}>
-              <CircularProgress
-                size={180}
-                strokeWidth={8}
-                progress={progressValue}
-                color={progressColor}
-                backgroundColor="#F2F2F7"
-              >
-                <View style={styles.budgetCenter}>
-                  <Text style={styles.budgetAmount}>¥{centerAmount.toLocaleString()}</Text>
-                  <Text style={styles.budgetLabel}>{centerLabel}</Text>
+          {/* Summary with circular progress and key stats */}
+          <View style={styles.budgetSection}>
+            <View style={styles.budgetCard}>
+              <View style={styles.budgetHeader}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Wallet size={20} color="#34C759" />
+                  <Text style={[styles.budgetTitle, { marginLeft: 8 }]}>今月の食費</Text>
                 </View>
-              </CircularProgress>
-            </View>
+                <View style={[styles.statusPill, { backgroundColor: statusBg }]}>
+                  <Text style={styles.statusPillDate}>{monthLabel}</Text>
+                </View>
+              </View>
 
-            <View style={styles.sectionDivider} />
-
-            <View style={styles.miniCardsRow}>
-              <View style={[styles.miniCard, styles.miniCardCenter, status === 'over' && styles.miniCardOver]}>
-                <Text style={[styles.miniCardLabel, styles.centerText]}>使用済み</Text>
-                <Text
-                  style={[
-                    styles.miniCardValue,
-                    styles.centerText,
-                    status === 'over' && styles.miniCardValueOver,
-                  ]}
+              <View style={styles.circularProgressContainer}>
+                <CircularProgress
+                  size={180}
+                  strokeWidth={8}
+                  progress={progressValue}
+                  color={progressColor}
+                  backgroundColor="#F2F2F7"
                 >
-                  ¥{totalSpent.toLocaleString()}
-                </Text>
+                  <View style={styles.budgetCenter}>
+                    <Text style={styles.budgetAmount}>¥{centerAmount.toLocaleString()}</Text>
+                    <Text style={styles.budgetLabel}>{centerLabel}</Text>
+                  </View>
+                </CircularProgress>
               </View>
-              <View style={[styles.miniCard, styles.miniCardCenter]}>
-                <Text style={[styles.miniCardLabel, styles.centerText]}>使える金額</Text>
-                <Text style={[styles.miniCardValue, styles.centerText]}>¥{monthlyTarget.toLocaleString()}</Text>
-              </View>
-            </View>
-          </View>
-        </View>
 
-        <View style={styles.remainingCard}>
-          <View style={styles.remainingColumn}>
-            <Text style={styles.remainingLabel}>残り日数</Text>
-            <Text style={styles.remainingValue}>{remainingDays}</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.remainingColumn}>
-            <Text style={styles.remainingLabel}>1日あたりの食費目安</Text>
-            <Text style={styles.remainingValue}>¥{dailyAllowanceDisplay.toLocaleString()}</Text>
-          </View>
-        </View>
+              <View style={styles.sectionDivider} />
 
-        <View style={styles.chartSection}>
-          <View style={styles.chartHeader}>
-            <Text style={styles.sectionTitle}>日別の支出内訳</Text>
-            <View style={styles.legendRow}>
-              {mealSegments.map(segment => (
-                <View key={segment.key} style={styles.legendItem}>
-                  <View style={[styles.legendSwatch, { backgroundColor: segment.color }]} />
-                  <Text style={styles.legendLabel}>{segment.label}</Text>
+              <View style={styles.miniCardsRow}>
+                <View style={[styles.miniCard, styles.miniCardCenter, status === 'over' && styles.miniCardOver]}>
+                  <Text style={[styles.miniCardLabel, styles.centerText]}>使用済み</Text>
+                  <Text
+                    style={[
+                      styles.miniCardValue,
+                      styles.centerText,
+                      status === 'over' && styles.miniCardValueOver,
+                    ]}
+                  >
+                    ¥{totalSpent.toLocaleString()}
+                  </Text>
                 </View>
-              ))}
+                <View style={[styles.miniCard, styles.miniCardCenter]}>
+                  <Text style={[styles.miniCardLabel, styles.centerText]}>使える金額</Text>
+                  <Text style={[styles.miniCardValue, styles.centerText]}>¥{monthlyTarget.toLocaleString()}</Text>
+                </View>
+              </View>
             </View>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={[styles.chartCard, { width: Math.max(svgWidth + 16, width - 48) }]}>
-              <Svg width={svgWidth} height={chartHeight + chartPadding * 2}>
-                {ticks.map((v, idx) => {
-                  const y = chartPadding + chartHeight - (v / maxValue) * chartHeight;
-                  return (
-                    <React.Fragment key={`tick-${idx}`}>
-                      <Line
-                        x1={axisX}
-                        y1={y}
-                        x2={chartRight}
-                        y2={y}
-                        stroke="#F2F2F7"
-                        strokeWidth={1}
-                      />
+
+          <View style={styles.remainingCard}>
+            <View style={styles.remainingColumn}>
+              <Text style={styles.remainingLabel}>残り日数</Text>
+              <Text style={styles.remainingValue}>{remainingDays}</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.remainingColumn}>
+              <Text style={styles.remainingLabel}>1日あたりの食費目安</Text>
+              <Text style={styles.remainingValue}>¥{dailyAllowanceDisplay.toLocaleString()}</Text>
+            </View>
+          </View>
+
+          <View style={styles.chartSection}>
+            <View style={styles.chartHeader}>
+              <Text style={styles.sectionTitle}>日別の支出内訳</Text>
+              <View style={styles.legendRow}>
+                {mealSegments.map(segment => (
+                  <View key={segment.key} style={styles.legendItem}>
+                    <View style={[styles.legendSwatch, { backgroundColor: segment.color }]} />
+                    <Text style={styles.legendLabel}>{segment.label}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View style={[styles.chartCard, { width: Math.max(svgWidth + 16, width - 48) }]}>
+                <Svg width={svgWidth} height={chartHeight + chartPadding * 2}>
+                  {ticks.map((v, idx) => {
+                    const y = chartPadding + chartHeight - (v / maxValue) * chartHeight;
+                    return (
+                      <React.Fragment key={`tick-${idx}`}>
+                        <Line
+                          x1={axisX}
+                          y1={y}
+                          x2={chartRight}
+                          y2={y}
+                          stroke="#F2F2F7"
+                          strokeWidth={1}
+                        />
+                        <SvgText
+                          x={axisX - 12}
+                          y={y}
+                          fontSize={10}
+                          fill="#86868B"
+                          textAnchor="end"
+                          alignmentBaseline="central"
+                        >
+                          {`¥${v.toLocaleString()}`}
+                        </SvgText>
+                      </React.Fragment>
+                    );
+                  })}
+
+                  {dailyStacks.map((stack, idx) => {
+                    const x = axisX + idx * (barWidth + barGap);
+                    let currentY = chartPadding + chartHeight;
+                    return mealSegments.map(segment => {
+                      const value = stack[segment.key];
+                      if (value <= 0) return null;
+                      const barHeight = (value / maxValue) * chartHeight;
+                      currentY -= barHeight;
+                      return (
+                        <Rect
+                          key={`${segment.key}-${idx}`}
+                          x={x}
+                          y={currentY}
+                          width={barWidth}
+                          height={Math.max(barHeight, 1)}
+                          rx={4}
+                          fill={segment.color}
+                        />
+                      );
+                    });
+                  })}
+
+                  {dailyStacks.map((stack, idx) => {
+                    const x = axisX + idx * (barWidth + barGap) + barWidth / 2;
+                    return (
                       <SvgText
-                        x={axisX - 12}
-                        y={y}
+                        key={`xlabel-${idx}`}
+                        x={x}
+                        y={chartPadding + chartHeight + 16}
                         fontSize={10}
                         fill="#86868B"
-                        textAnchor="end"
-                        alignmentBaseline="central"
+                        textAnchor="middle"
                       >
-                        {`¥${v.toLocaleString()}`}
+                        {stack.day}
                       </SvgText>
-                    </React.Fragment>
-                  );
-                })}
-
-                {dailyStacks.map((stack, idx) => {
-                  const x = axisX + idx * (barWidth + barGap);
-                  let currentY = chartPadding + chartHeight;
-                  return mealSegments.map(segment => {
-                    const value = stack[segment.key];
-                    if (value <= 0) return null;
-                    const barHeight = (value / maxValue) * chartHeight;
-                    currentY -= barHeight;
-                    return (
-                      <Rect
-                        key={`${segment.key}-${idx}`}
-                        x={x}
-                        y={currentY}
-                        width={barWidth}
-                        height={Math.max(barHeight, 1)}
-                        rx={4}
-                        fill={segment.color}
-                      />
                     );
-                  });
-                })}
+                  })}
+                </Svg>
+              </View>
+            </ScrollView>
+          </View>
 
-                {dailyStacks.map((stack, idx) => {
-                  const x = axisX + idx * (barWidth + barGap) + barWidth / 2;
-                  return (
-                    <SvgText
-                      key={`xlabel-${idx}`}
-                      x={x}
-                      y={chartPadding + chartHeight + 16}
-                      fontSize={10}
-                      fill="#86868B"
-                      textAnchor="middle"
-                    >
-                      {stack.day}
-                    </SvgText>
-                  );
-                })}
-              </Svg>
-            </View>
-          </ScrollView>
-        </View>
-
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
-    </SafeAreaView>
+          <View style={styles.bottomSpacer} />
+        </ScrollView>
+      </SafeAreaView>
+    )
   );
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#6B7280',
+    fontWeight: '600',
+  },
+  subscribeContainer: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  subscribeCard: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 28,
+    width: '100%',
+    maxWidth: 360,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 10,
+    borderWidth: 1,
+    borderColor: '#EEF2EF',
+  },
+  subscribeBadge: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginBottom: 24,
+  },
+  subscribeBadgeText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1F2937',
+    letterSpacing: 0.2,
+    textAlign: 'center',
+  },
+  subscribeButton: {
+    backgroundColor: '#34C759',
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+    marginTop: 4,
+    shadowColor: '#34C759',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  subscribeButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: 'white',
+    letterSpacing: 0.2,
+  },
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',

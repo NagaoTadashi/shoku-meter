@@ -1,6 +1,6 @@
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { storage } from '@/utils/storage';
-import { Database, Settings as SettingsIcon, Target, Trash2 } from 'lucide-react-native';
+import { Crown, Database, Settings as SettingsIcon, Target, Trash2 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import RevenueCatUI from 'react-native-purchases-ui';
 
 
 export default function SettingsScreen() {
@@ -64,6 +65,14 @@ export default function SettingsScreen() {
         }
       ]
     );
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      await RevenueCatUI.presentCustomerCenter();
+    } catch (error) {
+      Alert.alert('エラー', 'サブスクリプションの管理画面を開けませんでした。時間をおいて再度お試しください。');
+    }
   };
 
   // 月間統計はレポートタブへ移動
@@ -136,6 +145,21 @@ export default function SettingsScreen() {
           {/** Language selection removed: Japanese only */}
 
           {/* 月間統計セクションはレポートへ切り出し済みのため削除 */}
+
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Crown size={20} color="#34C759" />
+              <Text style={[styles.sectionTitle, { marginLeft: 8 }]}>サブスクリプション</Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.subscriptionButton}
+              onPress={handleManageSubscription}
+            >
+              <Crown size={18} color="#FFFFFF" />
+              <Text style={styles.subscriptionButtonText}>サブスクリプションを管理する</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
@@ -400,6 +424,26 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FF3B30',
     marginLeft: 8,
+  },
+  subscriptionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#34C759',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 12,
+    elevation: 4,
+    gap: 8,
+  },
+  subscriptionButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: 'white',
   },
   footer: {
     alignItems: 'center',
