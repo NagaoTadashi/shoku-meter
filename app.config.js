@@ -22,7 +22,7 @@ const getAppName = () => {
     //     return '食メーター (Preview)';
     // }
 
-    return '色メーター';
+    return '食メーター';
 };
 
 
