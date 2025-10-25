@@ -29,6 +29,17 @@ export default function RootLayout() {
     <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="about"
+          options={{
+            headerShown: true,
+            title: 'このアプリについて',
+            headerTintColor: '#1D1D1F',
+            headerStyle: { backgroundColor: '#F8F9FA' },
+            headerTitleStyle: { fontWeight: '600' },
+            headerShadowVisible: false,
+          }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="dark" />

@@ -1,6 +1,6 @@
 import { useFoodBudget } from '@/contexts/FoodBudgetContext';
 import { storage } from '@/utils/storage';
-import { Crown, Database, Settings as SettingsIcon, Target, Trash2 } from 'lucide-react-native';
+import { Crown, Database, Settings as SettingsIcon, Target, Trash2, Info, FileText, ShieldCheck, Mail } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -13,6 +13,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Linking,
 } from 'react-native';
 import RevenueCatUI from 'react-native-purchases-ui';
 
@@ -174,6 +175,67 @@ export default function SettingsScreen() {
               <Trash2 size={18} color="#FF3B30" />
               <Text style={styles.dangerButtonText}>すべてのデータをリセット</Text>
             </TouchableOpacity>
+          </View>
+
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Info size={20} color="#34C759" />
+              <Text style={[styles.sectionTitle, { marginLeft: 8 }]}>このアプリについて</Text>
+            </View>
+
+            <View style={styles.aboutCard}>
+              <TouchableOpacity
+                style={styles.aboutRow}
+                activeOpacity={0.7}
+                onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}
+              >
+                <View style={styles.aboutRowLeading}>
+                  <View style={styles.aboutIcon}>
+                    <FileText size={18} color="#34C759" />
+                  </View>
+                  <View>
+                    <Text style={styles.aboutRowTitle}>利用規約</Text>
+                    <Text style={styles.aboutRowSubtitle}>App Store 標準利用規約に移動します</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+
+              <View style={styles.aboutDivider} />
+
+              <TouchableOpacity
+                style={styles.aboutRow}
+                activeOpacity={0.7}
+                onPress={() => Linking.openURL('https://nagaotadashi.github.io/shoku-meter/')}
+              >
+                <View style={styles.aboutRowLeading}>
+                  <View style={styles.aboutIcon}>
+                    <ShieldCheck size={18} color="#34C759" />
+                  </View>
+                  <View>
+                    <Text style={styles.aboutRowTitle}>プライバシーポリシー</Text>
+                    <Text style={styles.aboutRowSubtitle}>最新のプライバシーポリシーをご確認ください</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+
+              <View style={styles.aboutDivider} />
+
+              <TouchableOpacity
+                style={styles.aboutRow}
+                activeOpacity={0.7}
+                onPress={() => Linking.openURL('mailto:tahofu89@gmail.com')}
+              >
+                <View style={styles.aboutRowLeading}>
+                  <View style={styles.aboutIcon}>
+                    <Mail size={18} color="#34C759" />
+                  </View>
+                  <View>
+                    <Text style={styles.aboutRowTitle}>お問い合わせ</Text>
+                    <Text style={styles.aboutRowSubtitle}>tahofu89@gmail.com 宛にメールを送信します</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.footer}>
@@ -424,6 +486,54 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FF3B30',
     marginLeft: 8,
+  },
+  aboutCard: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#EEF2EF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  aboutRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+  },
+  aboutRowLeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 12,
+  },
+  aboutIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#F2FCEB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  aboutRowTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1D1D1F',
+  },
+  aboutRowSubtitle: {
+    fontSize: 13,
+    color: '#86868B',
+    marginTop: 4,
+  },
+  aboutDivider: {
+    height: 1,
+    backgroundColor: '#F2F2F7',
+    marginLeft: 48,
   },
   subscriptionButton: {
     flexDirection: 'row',
